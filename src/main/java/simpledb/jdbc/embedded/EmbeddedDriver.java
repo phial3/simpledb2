@@ -1,16 +1,25 @@
 package simpledb.jdbc.embedded;
 
-import simpledb.server.SimpleDB;
-
-import java.sql.SQLException;
 import java.util.Properties;
+import java.sql.SQLException;
+import simpledb.server.SimpleDB;
+import simpledb.jdbc.DriverAdapter;
 
-public class EmbeddedDriver extends DriverAdapter {
-    @Override
-    public EmbeddedConnection connect(String url, Properties info) throws SQLException {
-        String dbName = url.replace("jdbc:simpledb:", "");
-        String dbDir = info.getProperty("DB_DIR", "dbdir").trim().replaceAll("/", "");
-        SimpleDB db = new SimpleDB(dbDir + "/" + dbName);
-        return new EmbeddedConnection(db);
-    }
+/**
+ * The RMI server-side implementation of RemoteDriver.
+ * @author Edward Sciore
+ */
+
+public class EmbeddedDriver extends DriverAdapter {   
+   /**
+    * Creates a new RemoteConnectionImpl object and 
+    * returns it.
+    * @see simpledb.jdbc.network.RemoteDriver#connect()
+    */
+   public EmbeddedConnection connect(String url, Properties p) throws SQLException {
+      String dbname = url.replace("jdbc:simpledb:", "");
+      SimpleDB db = new SimpleDB(dbname);
+      return new EmbeddedConnection(db);
+   }
 }
+

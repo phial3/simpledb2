@@ -1,12 +1,12 @@
 package simpledb.parse;
 
-import java.io.IOException;
-
+/**
+ * A runtime exception indicating that the submitted query
+ * has incorrect syntax.
+ * @author Edward Sciore
+ */
+@SuppressWarnings("serial")
 public class BadSyntaxException extends RuntimeException {
-    public BadSyntaxException() {
-        super();
-    }
-    public BadSyntaxException(Throwable e) {
-        super(e);
-    }
+   public BadSyntaxException() {
+   }
 }

@@ -7,41 +7,58 @@ import simpledb.tx.Transaction;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RemoteStatementImpl extends UnicastRemoteObject implements RemoteStatement {
-    private RemoteConnectionImpl rConn;
-    private Planner planner;
-
-    public RemoteStatementImpl(RemoteConnectionImpl rConn, Planner planner) throws RemoteException {
-        this.rConn = rConn;
-        this.planner = planner;
-    }
-
-    @Override
-    public RemoteResultSet executeQuery(String query) throws RemoteException {
-        try {
-            Transaction tx = rConn.getTransaction();
-            Plan plan = planner.createQueryPlan(query, tx);
-            return new RemoteResultSetImpl(plan, rConn);
-        } catch (RuntimeException e) {
-            rConn.rollback();
-            throw e;
-        }
-    }
-
-    @Override
-    public int executeUpdate(String cmd) throws RemoteException {
-        try {
-            Transaction tx = rConn.getTransaction();
-            int result = planner.executeUpdate(cmd, tx);
-            rConn.commit();
-            return result;
-        } catch (RuntimeException e) {
-            rConn.rollback();
-            throw e;
-        }
-    }
-
-    @Override
-    public void close() throws RemoteException {
-    }
+/**
+ * The RMI server-side implementation of RemoteStatement.
+ * @author Edward Sciore
+ */
+@SuppressWarnings("serial")
+class RemoteStatementImpl extends UnicastRemoteObject implements RemoteStatement {
+   private RemoteConnectionImpl rconn;
+   private Planner planner;
+   
+   public RemoteStatementImpl(RemoteConnectionImpl rconn, Planner planner) throws RemoteException {
+      this.rconn = rconn;
+      this.planner = planner;
+   }
+   
+   /**
+    * Executes the specified SQL query string.
+    * The method calls the query planner to create a plan
+    * for the query. It then sends the plan to the
+    * RemoteResultSetImpl constructor for processing.
+    * @see simpledb.jdbc.network.RemoteStatement#executeQuery(java.lang.String)
+    */
+   public RemoteResultSet executeQuery(String qry) throws RemoteException {
+      try {
+         Transaction tx = rconn.getTransaction();
+         Plan pln = planner.createQueryPlan(qry, tx);
+         return new RemoteResultSetImpl(pln, rconn);
+      }
+      catch(RuntimeException e) {
+         rconn.rollback();
+         throw e;
+      }
+   }
+   
+   /**
+    * Executes the specified SQL update command.
+    * The method sends the command to the update planner,
+    * which executes it.
+    * @see simpledb.jdbc.network.RemoteStatement#executeUpdate(java.lang.String)
+    */
+   public int executeUpdate(String cmd) throws RemoteException {
+      try {
+         Transaction tx = rconn.getTransaction();
+         int result = planner.executeUpdate(cmd, tx);
+         rconn.commit();
+         return result;
+      }
+      catch(RuntimeException e) {
+         rconn.rollback();
+         throw e;
+      }
+   }
+   
+   public void close() {
+   }
 }

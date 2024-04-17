@@ -1,45 +1,44 @@
 package simpledb.query;
 
+/**
+ * The class that denotes values stored in the database.
+ * @author Edward Sciore
+ */
 public class Constant implements Comparable<Constant> {
-    private Integer iVal = null;
-    private String sVal = null;
-
-    public Constant(Integer iVal) {
-        this.iVal = iVal;
-    }
-
-    public Constant(String sVal) {
-        this.sVal = sVal;
-    }
-
-    public int asInt() {
-        return iVal;
-    }
-
-    public String asString() {
-        return sVal;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Constant c = (Constant) obj;
-        return (iVal != null) ? iVal.equals(c.iVal) : sVal.equals(c.sVal);
-    }
-
-    @Override
-    public int hashCode() {
-        return (iVal != null) ? iVal.hashCode() : sVal.hashCode();
-    }
-
-    @Override
-    public int compareTo(Constant c) {
-        return (iVal != null) ? iVal.compareTo(c.iVal) : sVal.compareTo(c.sVal);
-    }
-
-    @Override
-    public String toString() {
-        return (iVal != null) ? iVal.toString() : sVal;
-    }
+   private Integer ival = null;
+   private String  sval = null;
+   
+   public Constant(Integer ival) {
+      this.ival = ival;
+   }
+   
+   public Constant(String sval) {
+      this.sval = sval;
+   }
+   
+   public int asInt() {
+      return ival;
+   }
+   
+   public String asString() {
+      return sval;
+   }
+   
+   public boolean equals(Object obj) {
+      Constant c = (Constant) obj;
+      if (c == null) return false;
+      return (ival != null) ? ival.equals(c.ival) : sval.equals(c.sval);
+   }
+   
+   public int compareTo(Constant c) {
+      return (ival != null) ? ival.compareTo(c.ival) : sval.compareTo(c.sval);
+   }
+   
+   public int hashCode() {
+      return (ival != null) ? ival.hashCode() : sval.hashCode();
+   }
+   
+   public String toString() {
+      return (ival != null) ? ival.toString() : sval.toString();
+   }   
 }

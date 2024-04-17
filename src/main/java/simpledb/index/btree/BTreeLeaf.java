@@ -1,133 +1,147 @@
 package simpledb.index.btree;
 
 import simpledb.file.BlockId;
-import simpledb.query.Constant;
-import simpledb.record.Layout;
-import simpledb.record.RID;
 import simpledb.tx.Transaction;
+import simpledb.record.*;
+import simpledb.query.Constant;
 
+/**
+ * An object that holds the contents of a B-tree leaf block.
+ * @author Edward Sciore
+ */
 public class BTreeLeaf {
-    private Transaction tx;
-    private Layout layout;
-    private Constant searchKey;
-    private BTPage contents;
-    private int currentSlot;
-    private String fileName;
+   private Transaction tx;
+   private Layout layout;
+   private Constant searchkey;
+   private BTPage contents;
+   private int currentslot;
+   private String filename;
 
-    /**
-     * Opens a buffer to hold the specified leaf block.
-     * The buffer is positioned immediately before the first record
-     * having the specified search key (if any).
-     */
-    public BTreeLeaf(Transaction tx, BlockId blk, Layout layout, Constant searchKey) {
-        this.tx = tx;
-        this.layout = layout;
-        this.searchKey = searchKey;
-        contents = new BTPage(tx, blk, layout);
-        currentSlot = contents.findSlotBefore(searchKey);
-        fileName = blk.fileName();
-    }
+   /**
+    * Opens a buffer to hold the specified leaf block.
+    * The buffer is positioned immediately before the first record
+    * having the specified search key (if any).
+    * @param blk a reference to the disk block
+    * @param layout the metadata of the B-tree leaf file
+    * @param searchkey the search key value
+    * @param tx the calling transaction
+    */
+   public BTreeLeaf(Transaction tx, BlockId blk, Layout layout, Constant searchkey) {
+      this.tx = tx;
+      this.layout = layout;
+      this.searchkey = searchkey;
+      contents = new BTPage(tx, blk, layout);
+      currentslot = contents.findSlotBefore(searchkey);
+      filename = blk.fileName();            
+   }
 
-    /**
-     * Close the leaf page
-     */
-    public void close() {
-        contents.close();
-    }
+   /**
+    * Closes the leaf page.
+    */
+   public void close() {
+      contents.close();
+   }
 
-    /**
-     * Moves to the next leaf record having the
-     * previously-specified search key.
-     * Returns false if there is no more such records.
-     */
-    public boolean next() {
-        currentSlot++;
-        if (currentSlot >= contents.getNumRecs())
-            return tryOverflow();
-        else if (contents.getDataVal(currentSlot).equals(searchKey))
-            return true;
-        else
-            return tryOverflow();
-    }
+   /**
+    * Moves to the next leaf record having the 
+    * previously-specified search key.
+    * Returns false if there is no more such records.
+    * @return false if there are no more leaf records for the search key
+    */
+   public boolean next() {
+      currentslot++;
+      if (currentslot >= contents.getNumRecs()) 
+         return tryOverflow();
+      else if (contents.getDataVal(currentslot).equals(searchkey))
+         return true;
+      else 
+         return tryOverflow();
+   }
 
-    /**
-     * Returns the dataRID value of the current leaf record.
-     */
-    public RID getDataRid() {
-        return contents.getDataRid(currentSlot);
-    }
+   /**
+    * Returns the dataRID value of the current leaf record.
+    * @return the dataRID of the current record
+    */
+   public RID getDataRid() {
+      return contents.getDataRid(currentslot);
+   }
 
-    /**
-     * Deletes the leaf record having the specified dataRID
-     */
-    public void delete(RID dataRid) {
-        while (next())
-            if (getDataRid().equals(dataRid)) {
-                contents.delete(currentSlot);
-                return;
-            }
-    }
+   /**
+    * Deletes the leaf record having the specified dataRID
+    * @param datarid the dataRId whose record is to be deleted
+    */
+   public void delete(RID datarid) {
+      while(next())
+         if(getDataRid().equals(datarid)) {
+            contents.delete(currentslot);
+            return;
+         }
+   }
 
-    /**
-     * Inserts a new leaf record having the specified dataRID
-     * and the previously-specified search key.
-     * If the record does no fit in the page, then
-     * the page splits and the method returns the
-     * directory entry for the new page;
-     * otherwise, the method returns null.
-     * If all the records in the page have the same dataVal,
-     * then the block does not split; instead, all but one of the
-     * records are placed into an overflow block.
-     */
-    public DirEntry insert(RID dataRid) {
-        if (contents.getFlag() >= 0 && contents.getDataVal(0).compareTo(searchKey) > 0) {
-            Constant firstVal = contents.getDataVal(0);
-            BlockId newBlk = contents.split(0, contents.getFlag());
-            currentSlot = 0;
-            contents.setFlag(-1);
-            contents.insertLeaf(currentSlot, searchKey, dataRid);
-            return new DirEntry(firstVal, newBlk.number());
-        }
+   /**
+    * Inserts a new leaf record having the specified dataRID
+    * and the previously-specified search key.
+    * If the record does not fit in the page, then 
+    * the page splits and the method returns the
+    * directory entry for the new page;
+    * otherwise, the method returns null.  
+    * If all of the records in the page have the same dataval,
+    * then the block does not split; instead, all but one of the
+    * records are placed into an overflow block.
+    * @param datarid the dataRID value of the new record
+    * @return the directory entry of the newly-split page, if one exists.
+    */
+   public DirEntry insert(RID datarid) {
+      if (contents.getFlag() >= 0 && contents.getDataVal(0).compareTo(searchkey) > 0) {
+         Constant firstval = contents.getDataVal(0);
+         BlockId newblk = contents.split(0, contents.getFlag());
+         currentslot = 0;
+         contents.setFlag(-1);
+         contents.insertLeaf(currentslot, searchkey, datarid); 
+         return new DirEntry(firstval, newblk.number());  
+      }
 
-        currentSlot++;
-        contents.insertLeaf(currentSlot, searchKey, dataRid);
-        if (!contents.isFull())
-            return null;
-        // ページが full の場合、split する
-        Constant firstKey = contents.getDataVal(0);
-        Constant lastKey = contents.getDataVal(contents.getNumRecs()-1);
-        if (lastKey.equals(firstKey)) {
-            // overflow ブロックを生成して、2件目以降のレコードを移す
-            BlockId newBlk = contents.split(1, contents.getFlag());
-            contents.setFlag(newBlk.number());
-            return null;
-        } else {
-            int splitPos = contents.getNumRecs() / 2;
-            Constant splitKey = contents.getDataVal(splitPos);
-            if (splitKey.equals(firstKey)) {
-                // next key を探すために右へ移動
-                while (contents.getDataVal(splitPos).equals(splitKey))
-                    splitPos++;
-                splitKey = contents.getDataVal(splitPos);
-            } else {
-                // key を持つ最初の entry を探すために左へ移動
-                while (contents.getDataVal(splitPos-1).equals(splitKey))
-                    splitPos--;
-            }
-            BlockId newBlk = contents.split(splitPos, -1);
-            return new DirEntry(splitKey, newBlk.number());
-        }
-    }
+      currentslot++;
+      contents.insertLeaf(currentslot, searchkey, datarid);
+      if (!contents.isFull())
+         return null;
+      // else page is full, so split it
+      Constant firstkey = contents.getDataVal(0);
+      Constant lastkey  = contents.getDataVal(contents.getNumRecs()-1);
+      if (lastkey.equals(firstkey)) {
+         // create an overflow block to hold all but the first record
+         BlockId newblk = contents.split(1, contents.getFlag());
+         contents.setFlag(newblk.number());
+         return null;
+      }
+      else {
+         int splitpos = contents.getNumRecs() / 2;
+         Constant splitkey = contents.getDataVal(splitpos);
+         if (splitkey.equals(firstkey)) {
+            // move right, looking for the next key
+            while (contents.getDataVal(splitpos).equals(splitkey))
+               splitpos++;
+            splitkey = contents.getDataVal(splitpos);
+         }
+         else {
+            // move left, looking for first entry having that key
+            while (contents.getDataVal(splitpos-1).equals(splitkey))
+               splitpos--;
+         }
+         BlockId newblk = contents.split(splitpos, -1);
+         return new DirEntry(splitkey, newblk.number());
+      }
+   }
 
-    private boolean tryOverflow() {
-        Constant firstKey = contents.getDataVal(0);
-        int flag = contents.getFlag();
-        if (!searchKey.equals(firstKey) || flag < 0)
-            return false;
-        contents.close();
-        BlockId nextBlk = new BlockId(fileName, flag);
-        contents = new BTPage(tx, nextBlk, layout);
-        currentSlot = 0;
-        return true;
-    }
+   private boolean tryOverflow() {
+      Constant firstkey = contents.getDataVal(0);
+      int flag = contents.getFlag();
+      if (!searchkey.equals(firstkey) || flag < 0)
+         return false;
+      contents.close();
+      BlockId nextblk = new BlockId(filename, flag);
+      contents = new BTPage(tx, nextblk, layout);
+      currentslot = 0;
+      return true;
+   }
 }

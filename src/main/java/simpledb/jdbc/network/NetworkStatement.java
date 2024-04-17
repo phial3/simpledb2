@@ -1,41 +1,47 @@
 package simpledb.jdbc.network;
 
+import java.sql.*;
 import simpledb.jdbc.StatementAdapter;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+/**
+ * An adapter class that wraps RemoteStatement.
+ * Its methods do nothing except transform RemoteExceptions
+ * into SQLExceptions.
+ * @author Edward Sciore
+ */
 public class NetworkStatement extends StatementAdapter {
-    private RemoteStatement rStmt;
-    public NetworkStatement(RemoteStatement rStmt) {
-        this.rStmt = rStmt;
-    }
+   private RemoteStatement rstmt;
 
-    @Override
-    public ResultSet executeQuery(String query) throws SQLException {
-        try {
-            RemoteResultSet rRs = rStmt.executeQuery(query);
-            return new NetworkResultSet(rRs);
-        } catch (Exception e) {
-            throw new SQLException(e);
-        }
-    }
+   public NetworkStatement(RemoteStatement s) {
+      rstmt = s;
+   }
 
-    @Override
-    public int executeUpdate(String cmd) throws SQLException {
-        try {
-            return rStmt.executeUpdate(cmd);
-        } catch (Exception e) {
-            throw new SQLException(e);
-        }
-    }
+   public ResultSet executeQuery(String qry) throws SQLException {
+      try {
+         RemoteResultSet rrs = rstmt.executeQuery(qry);
+         return new NetworkResultSet(rrs);
+      }
+      catch(Exception e) {
+         throw new SQLException(e);
+      }
+   }
 
-    @Override
-    public void close() throws SQLException {
-        try {
-            rStmt.close();
-        } catch (Exception e) {
-            throw new SQLException(e);
-        }
-    }
+   public int executeUpdate(String cmd) throws SQLException {
+      try {
+         return rstmt.executeUpdate(cmd);
+      }
+      catch(Exception e) {
+         throw new SQLException(e);
+      }
+   }
+
+   public void close() throws SQLException {
+      try {
+         rstmt.close();
+      }
+      catch(Exception e) {
+         throw new SQLException(e);
+      }
+   }
 }
+

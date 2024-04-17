@@ -1,85 +1,128 @@
 package simpledb.tx.recovery;
 
-import simpledb.buffer.Buffer;
-import simpledb.buffer.BufferMgr;
-import simpledb.file.BlockId;
-import simpledb.log.LogMgr;
+import java.util.*;
+import simpledb.file.*;
+import simpledb.log.*;
+import simpledb.buffer.*;
 import simpledb.tx.Transaction;
+import static simpledb.tx.recovery.LogRecord.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
+/**
+ * The recovery manager.  Each transaction has its own recovery manager.
+ * @author Edward Sciore
+ */
 public class RecoveryMgr {
-    private LogMgr lm;
-    private BufferMgr bm;
-    private Transaction tx;
-    private int txnum;
+   private LogMgr lm;
+   private BufferMgr bm;
+   private Transaction tx;
+   private int txnum;
 
-    public RecoveryMgr(Transaction tx, int txnum, LogMgr lm, BufferMgr bm) {
-        this.tx = tx;
-        this.txnum = txnum;
-        this.lm = lm;
-        this.bm = bm;
-        StartRecord.writeToLog(lm, txnum);
-    }
+   /**
+    * Create a recovery manager for the specified transaction.
+    * @param txnum the ID of the specified transaction
+    */
+   public RecoveryMgr(Transaction tx, int txnum, LogMgr lm, BufferMgr bm) {
+      this.tx = tx;
+      this.txnum = txnum;
+      this.lm = lm;
+      this.bm = bm;
+      StartRecord.writeToLog(lm, txnum);
+   }
 
-    public void commit() {
-        bm.flushAll(txnum);
-        int lsn = CommitRecord.writeToLog(lm, txnum);
-        lm.flush(lsn);
-    }
+   /**
+    * Write a commit record to the log, and flushes it to disk.
+    */
+   public void commit() {
+      bm.flushAll(txnum);
+      int lsn = CommitRecord.writeToLog(lm, txnum);
+      lm.flush(lsn);
+   }
 
-    public void rollback() {
-        doRollback();
-        bm.flushAll(txnum);
-        int lsn = RollbackRecord.writeToLog(lm, txnum);
-        lm.flush(lsn);
-    }
+   /**
+    * Write a rollback record to the log and flush it to disk.
+    */
+   public void rollback() {
+      doRollback();
+      bm.flushAll(txnum);
+      int lsn = RollbackRecord.writeToLog(lm, txnum);
+      lm.flush(lsn);
+   }
 
-    public void recover() {
-        doRecover();
-        bm.flushAll(txnum);
-        int lsn = CheckpointRecord.writeToLog(lm);
-        lm.flush(lsn);
-    }
+   /**
+    * Recover uncompleted transactions from the log
+    * and then write a quiescent checkpoint record to the log and flush it.
+    */
+   public void recover() {
+      doRecover();
+      bm.flushAll(txnum);
+      int lsn = CheckpointRecord.writeToLog(lm);
+      lm.flush(lsn);
+   }
 
-    public int setInt(Buffer buff, int offset, int newval) {
-        int oldval = buff.contents().getInt(offset);
-        BlockId blk = buff.block();
-        return SetIntRecord.writeToLog(lm, txnum, blk, offset, oldval);
-    }
+   /**
+    * Write a setint record to the log and return its lsn.
+    * @param buff the buffer containing the page
+    * @param offset the offset of the value in the page
+    * @param newval the value to be written
+    */
+   public int setInt(Buffer buff, int offset, int newval) {
+      int oldval = buff.contents().getInt(offset);
+      BlockId blk = buff.block();
+      return SetIntRecord.writeToLog(lm, txnum, blk, offset, oldval);
+   }
 
-    public int setString(Buffer buff, int offset, String newval) {
-        String oldval = buff.contents().getString(offset);
-        BlockId blk = buff.block();
-        return SetStringRecord.writeToLog(lm, txnum, blk, offset, oldval);
-    }
-    private void doRollback() {
-        Iterator<byte[]> iter = lm.iterator();
-        while (iter.hasNext()) {
-            byte[] bytes = iter.next();
-            LogRecord rec = LogRecord.createLogRecord(bytes);
-            if (rec.txNumber() == txnum) {
-                if (rec.op() == LogRecord.START)
-                    return;
-                rec.undo(tx);;
-            }
-        }
-    }
+   /**
+    * Write a setstring record to the log and return its lsn.
+    * @param buff the buffer containing the page
+    * @param offset the offset of the value in the page
+    * @param newval the value to be written
+    */
+   public int setString(Buffer buff, int offset, String newval) {
+      String oldval = buff.contents().getString(offset);
+      BlockId blk = buff.block();
+      return SetStringRecord.writeToLog(lm, txnum, blk, offset, oldval);
+   }
 
-    private void doRecover() {
-        Collection<Integer> finishedTxs = new ArrayList<Integer>();
-        Iterator<byte[]> iter = lm.iterator();
-        while (iter.hasNext()) {
-            byte[] bytes = iter.next();
-            LogRecord rec = LogRecord.createLogRecord(bytes);
-            if (rec.op() == LogRecord.CHECKPOINT)
-                return;
-            if (rec.op() == LogRecord.COMMIT || rec.op() == LogRecord.ROLLBACK)
-                finishedTxs.add(rec.txNumber());
-            else if (!finishedTxs.contains(rec.txNumber()))
-                rec.undo(tx);
-        }
-    }
+   /**
+    * Rollback the transaction, by iterating
+    * through the log records until it finds 
+    * the transaction's START record,
+    * calling undo() for each of the transaction's
+    * log records.
+    */
+   private void doRollback() {
+      Iterator<byte[]> iter = lm.iterator();
+      while (iter.hasNext()) {
+         byte[] bytes = iter.next();
+         LogRecord rec = LogRecord.createLogRecord(bytes); 
+         if (rec.txNumber() == txnum) {
+            if (rec.op() == START)
+               return;
+            rec.undo(tx);
+         }
+      }
+   }
+
+   /**
+    * Do a complete database recovery.
+    * The method iterates through the log records.
+    * Whenever it finds a log record for an unfinished
+    * transaction, it calls undo() on that record.
+    * The method stops when it encounters a CHECKPOINT record
+    * or the end of the log.
+    */
+   private void doRecover() {
+      Collection<Integer> finishedTxs = new ArrayList<>();
+      Iterator<byte[]> iter = lm.iterator();
+      while (iter.hasNext()) {
+         byte[] bytes = iter.next();
+         LogRecord rec = LogRecord.createLogRecord(bytes);
+         if (rec.op() == CHECKPOINT)
+            return;
+         if (rec.op() == COMMIT || rec.op() == ROLLBACK)
+            finishedTxs.add(rec.txNumber());
+         else if (!finishedTxs.contains(rec.txNumber()))
+            rec.undo(tx);
+      }
+   }
 }
