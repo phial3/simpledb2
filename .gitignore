@@ -40,5 +40,4 @@ build/
 ## project
 .mvn/
 gradle/
-target/
-/dbdir/
+/datadir
