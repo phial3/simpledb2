@@ -56,18 +56,18 @@ public class App {
         FileMgr fm = new FileMgr(dbDirectory, 400);
         String filename = "test.txt";
         // Init BlockId
-        BlockId blk = new BlockId(filename, fm.blockSize());
+        BlockId blk = new BlockId(filename, fm.blocksize());
 
         String msg = "test";
         int pos = 0;
 
         // Page -> File
-        Page page1 = new Page(fm.blockSize());
+        Page page1 = new Page(fm.blocksize());
         page1.setString(pos, msg);
         fm.write(blk, page1);
 
         // File -> Page
-        Page page2 = new Page(fm.blockSize());
+        Page page2 = new Page(fm.blocksize());
         fm.read(blk, page2);
         System.out.println("read message: " + page2.getString(pos));
 
@@ -389,7 +389,7 @@ public class App {
         Plan p1 = new TablePlan(tx, "T1", metadataMgr);
 
         System.out.println("R(p1): " + p1.recordsOutput());
-        System.out.println("B(p1): " + p1.blocksAccessed());
+        System.out.println("B(p1): " + p1.blockAccessed());
         for (String fldname : p1.schema().fields())
             System.out.println("V(p1, " + fldname + "): " + p1.distinctValues(fldname));
 
@@ -399,7 +399,7 @@ public class App {
         pred = new Predicate(t);
         Plan p2 = new SelectPlan(p1, pred);
         System.out.println("R(p2): " + p2.recordsOutput());
-        System.out.println("B(p2): " + p2.blocksAccessed());
+        System.out.println("B(p2): " + p2.blockAccessed());
         for (String fldname : p2.schema().fields())
             System.out.println("V(p2, " + fldname + "): " + p2.distinctValues(fldname));
 
@@ -407,7 +407,7 @@ public class App {
         System.out.println("10.1.3. ProjectPlan-------------");
         ProjectPlan p3 = new ProjectPlan(p2, fields);
         System.out.println("R(p3): " + p3.recordsOutput());
-        System.out.println("B(p3): " + p3.blocksAccessed());
+        System.out.println("B(p3): " + p3.blockAccessed());
         for (String fldname : p3.schema().fields())
             System.out.println("V(p2, " + fldname + "): " + p3.distinctValues(fldname));
 
@@ -423,7 +423,7 @@ public class App {
         Plan p5 = new ProductPlan(p1, p4);
         Plan p6 = new SelectPlan(p5, pred);
         System.out.println("R(p6): " + p6.recordsOutput());
-        System.out.println("B(p6): " + p6.blocksAccessed());
+        System.out.println("B(p6): " + p6.blockAccessed());
         for (String fldname : p6.schema().fields())
             System.out.println("V(p6, " + fldname + "): " + p6.distinctValues(fldname));
 
@@ -483,17 +483,14 @@ public class App {
         while (idx.next()) {
             RID datarid = idx.getDataRid();
             us.moveToRid(datarid);
-            System.out.println(
-                    String.format("Got data from T3 with index (rec0). RID:" + us.getRid() + ", fld1: " + us.getString("fld1")));
+            System.out.printf("Got data from T3 with index (rec0). RID: %s, fld1: %s\n", us.getRid().toString(), us.getString("fld1"));
         }
         System.out.println("Get records fld1=rec1 using index ------------------------------------------");
         idx.beforeFirst(new Constant("rec1"));
         while (idx.next()) {
             RID datarid = idx.getDataRid();
             us.moveToRid(datarid);
-            System.out
-                    .println(String
-                            .format("Got data from T3 with index (rec1). RID:" + us.getRid() + ", fld1: " + us.getString("fld1")));
+            System.out.printf("Got data from T3 with index (rec1). RID: %s, fld1: %s\n", us.getRid().toString(), us.getString("fld1"));
         }
 
         idx.close();
@@ -517,8 +514,9 @@ public class App {
         plan = new TablePlan(tx, "T1", metadataMgr);
         plan = new SortPlan(tx, plan, Arrays.asList("A"));
         scan = plan.open();
-        while (scan.next())
+        while (scan.next()) {
             System.out.println("get record from sorted TempTable: " + scan.getVal("A"));
+        }
 
         scan.close();
         tx.commit();
@@ -531,8 +529,7 @@ public class App {
         plan = new GroupByPlan(tx, plan, Arrays.asList("fld1"), Arrays.asList(countfn, maxfn));
         scan = plan.open();
         while (scan.next())
-            System.out
-                    .println("aggregation result: groupby: " + scan.getVal("fld1") + ", count: "
+            System.out.println("aggregation result: groupby: " + scan.getVal("fld1") + ", count: "
                             + scan.getVal(countfn.fieldName()) + ", max: " + scan.getVal(maxfn.fieldName()));
         scan.close();
         tx.commit();
@@ -551,12 +548,13 @@ public class App {
                 System.out.print(" T1." + fldname + ": " + scan.getVal(fldname) + ",");
             for (String fldname : p2.schema().fields())
                 System.out.print(" T2." + fldname + ": " + scan.getVal(fldname) + ",");
-            System.out.println("");
+            System.out.println();
         }
         scan.close();
         tx.commit();
 
         // Exercise 13.8. Sort empty table
+        System.out.println("13.8. Sort empty table --------------------");
         tx = new Transaction(fm, lm, bm);
         sch = new Schema();
         sch.addIntField("intfld");
@@ -608,8 +606,8 @@ public class App {
 
     private static void printValues(FileMgr fm, String msg, BlockId blk0, BlockId blk1) {
         System.out.println(msg);
-        Page p0 = new Page(fm.blockSize());
-        Page p1 = new Page(fm.blockSize());
+        Page p0 = new Page(fm.blocksize());
+        Page p1 = new Page(fm.blocksize());
         fm.read(blk0, p0);
         fm.read(blk1, p1);
         int pos = 0;

@@ -37,7 +37,7 @@ public class MultiTablePlanTest {
    private static void printStats(int n, Plan p) {
       System.out.println("Here are the stats for plan p" + n);
       System.out.println("\tR(p" + n + "): " + p.recordsOutput());
-      System.out.println("\tB(p" + n + "): " + p.blocksAccessed());
+      System.out.println("\tB(p" + n + "): " + p.blockAccessed());
       System.out.println();	
    }
 }

@@ -3,7 +3,7 @@ import java.io.*;
 
 public class RandomAccessFileTest {
    public static void main(String[] args) throws IOException {
-      File file = new File("testfile");            
+      File file = new File("/tmp/testfile");
       try {
          // initialize the file
          RandomAccessFile f1 = new RandomAccessFile(file, "rws");

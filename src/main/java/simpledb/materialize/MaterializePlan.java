@@ -49,9 +49,9 @@ public class MaterializePlan implements Plan {
     * materialized table.
     * It does <i>not</i> include the one-time cost
     * of materializing the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see simpledb.plan.Plan#blockAccessed()
     */
-   public int blocksAccessed() {
+   public int blockAccessed() {
       // create a dummy Layout object to calculate record length
       Layout layout = new Layout(srcplan.schema());
       double rpb = (double) (tx.blockSize() / layout.slotSize());

@@ -2,116 +2,105 @@ package simpledb.index.btree;
 
 import simpledb.file.BlockId;
 import simpledb.query.Constant;
-import simpledb.tx.Transaction;
 import simpledb.record.Layout;
+import simpledb.tx.Transaction;
 
-/**
- * A B-tree directory block.
- * @author Edward Sciore
- */
 public class BTreeDir {
-   private Transaction tx;
-   private Layout layout;
-   private BTPage contents;
-   private String filename;
+    private Transaction tx;
+    private Layout layout;
+    private BTPage contents;
+    private String fileName;
 
-   /**
-    * Creates an object to hold the contents of the specified
-    * B-tree block.
-    * @param blk a reference to the specified B-tree block
-    * @param layout the metadata of the B-tree directory file
-    * @param tx the calling transaction
-    */
-   BTreeDir(Transaction tx, BlockId blk, Layout layout) {
-      this.tx = tx;
-      this.layout = layout;
-      contents = new BTPage(tx, blk, layout);
-      filename = blk.fileName();
-   }
+    /**
+     * Creates an object to hold the contents of the specified
+     * B-tree block.
+     */
+    BTreeDir(Transaction tx, BlockId blk, Layout layout) {
+        this.tx = tx;
+        this.layout = layout;
+        contents = new BTPage(tx, blk, layout);
+        fileName = blk.fileName();
+    }
 
-   /**
-    * Closes the directory page.
-    */
-   public void close() {
-      contents.close();
-   }
+    /**
+     * Closes the directory page.
+     */
+    public void close() {
+        contents.close();
+    }
 
-   /**
-    * Returns the block number of the B-tree leaf block
-    * that contains the specified search key.
-    * @param searchkey the search key value
-    * @return the block number of the leaf block containing that search key
-    */
-   public int search(Constant searchkey) {
-      BlockId childblk = findChildBlock(searchkey);
-      while (contents.getFlag() > 0) {
-         contents.close();
-         contents = new BTPage(tx, childblk, layout);
-         childblk = findChildBlock(searchkey);
-      }
-      return childblk.number();
-   }
+    /**
+     * Returns the block number of the B-tree leaf block
+     * that contains the specified search key.
+     */
+    public int search(Constant searchKey) {
+        System.out.println("start search by " + searchKey);
+        BlockId childBlk = findChildBlock(searchKey);
+        while (contents.getFlag() > 0) {
+            contents.close();
+            contents = new BTPage(tx, childBlk, layout);
+            childBlk = findChildBlock(searchKey);
+        }
+        return childBlk.number();
+    }
 
-   /**
-    * Creates a new root block for the B-tree.
-    * The new root will have two children:
-    * the old root, and the specified block.
-    * Since the root must always be in block 0 of the file,
-    * the contents of the old root will get transferred to a new block.
-    * @param e the directory entry to be added as a child of the new root
-    */
-   public void makeNewRoot(DirEntry e) {
-      Constant firstval = contents.getDataVal(0);
-      int level = contents.getFlag();
-      BlockId newblk = contents.split(0, level); //ie, transfer all the records
-      DirEntry oldroot = new DirEntry(firstval, newblk.number());
-      insertEntry(oldroot);
-      insertEntry(e);
-      contents.setFlag(level+1);
-   }
+    /**
+     * Creates a new root block for the B-tree.
+     * The new root will have two children:
+     * the old root, and the specified block.
+     * Since the root must always be in block 0 of the file,
+     * the contents of the old root will get transferred to a new block.
+     */
+    public void makeNewRoot(DirEntry e) {
+        Constant firstVal = contents.getDataVal(0);
+        int level = contents.getFlag();
+        BlockId newBlk = contents.split(0, level);
+        DirEntry oldRoot = new DirEntry(firstVal, newBlk.number());
+        insertEntry(oldRoot);
+        insertEntry(e);
+        contents.setFlag(level + 1);
+    }
 
-   /**
-    * Inserts a new directory entry into the B-tree block.
-    * If the block is at level 0, then the entry is inserted there.
-    * Otherwise, the entry is inserted into the appropriate
-    * child node, and the return value is examined.
-    * A non-null return value indicates that the child node
-    * split, and so the returned entry is inserted into
-    * this block.
-    * If this block splits, then the method similarly returns
-    * the entry information of the new block to its caller;
-    * otherwise, the method returns null.
-    * @param e the directory entry to be inserted
-    * @return the directory entry of the newly-split block, if one exists; otherwise, null
-    */
-   public DirEntry insert(DirEntry e) {
-      if (contents.getFlag() == 0)
-         return insertEntry(e);
-      BlockId childblk = findChildBlock(e.dataVal());
-      BTreeDir child = new BTreeDir(tx, childblk, layout);
-      DirEntry myentry = child.insert(e);
-      child.close();
-      return (myentry != null) ? insertEntry(myentry) : null;
-   }
+    /**
+     * Inserts a new directory entry into the B-tree block.
+     * If the block is at level 0, then the entry is inserted there.
+     * Otherwise, the entry is inserted into the appropriate
+     * child node, and the return value is examined.
+     * A non-null return value indicates that the child node
+     * split, and so the returned entry is inserted into
+     * this block.
+     * If this block splits, then the method similarly returns
+     * the entry information of the new block to its caller;
+     * otherwise, the method returns null.
+     */
+    public DirEntry insert(DirEntry e) {
+        if (contents.getFlag() == 0)
+            return insertEntry(e);
+        BlockId childBlk = findChildBlock(e.dataVal());
+        BTreeDir child = new BTreeDir(tx, childBlk, layout);
+        DirEntry myEntry = child.insert(e);
+        child.close();
+        return (myEntry != null) ? insertEntry(myEntry) : null;
+    }
 
-   private DirEntry insertEntry(DirEntry e) {
-      int newslot = 1 + contents.findSlotBefore(e.dataVal());
-      contents.insertDir(newslot, e.dataVal(), e.blockNumber());
-      if (!contents.isFull())
-         return null;
-      // else page is full, so split it
-      int level = contents.getFlag();
-      int splitpos = contents.getNumRecs() / 2;
-      Constant splitval = contents.getDataVal(splitpos);
-      BlockId newblk = contents.split(splitpos, level);
-      return new DirEntry(splitval, newblk.number());
-   }
+    private DirEntry insertEntry(DirEntry e) {
+        int newSlot = 1 + contents.findSlotBefore(e.dataVal());
+        contents.insertDir(newSlot, e.dataVal(), e.blockNumber());
+        if (!contents.isFull())
+            return null;
+        // else page is full, so split it
+        int level = contents.getFlag();
+        int splitPos = contents.getNumRecs() / 2;
+        Constant splitVal = contents.getDataVal(splitPos);
+        BlockId newBlk = contents.split(splitPos, level);
+        return new DirEntry(splitVal, newBlk.number());
+    }
 
-   private BlockId findChildBlock(Constant searchkey) {
-      int slot = contents.findSlotBefore(searchkey);
-      if (contents.getDataVal(slot+1).equals(searchkey))
-         slot++;
-      int blknum = contents.getChildNum(slot);
-      return new BlockId(filename, blknum);
-   }
+    private BlockId findChildBlock(Constant searchKey) {
+        int slot = contents.findSlotBefore(searchKey);
+        if (contents.getDataVal(slot+1).equals(searchKey))
+            slot++;
+        int blkNum = contents.getChildNum(slot);
+        return new BlockId(fileName, blkNum);
+    }
 }

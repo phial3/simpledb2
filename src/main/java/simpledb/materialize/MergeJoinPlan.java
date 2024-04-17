@@ -59,10 +59,11 @@ public class MergeJoinPlan implements Plan {
     * materialized sorted tables.
     * It does <i>not</i> include the one-time cost
     * of materializing and sorting the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see simpledb.plan.Plan#blockAccessed()
     */
-   public int blocksAccessed() {
-      return p1.blocksAccessed() + p2.blocksAccessed();
+   @Override
+   public int blockAccessed() {
+      return p1.blockAccessed() + p2.blockAccessed();
    }
    
    /**

@@ -54,10 +54,10 @@ public class GroupByPlan implements Plan {
     * which is one pass through the sorted table.
     * It does <i>not</i> include the one-time cost
     * of materializing and sorting the records.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see simpledb.plan.Plan#blockAccessed()
     */
-   public int blocksAccessed() {
-      return p.blocksAccessed();
+   public int blockAccessed() {
+      return p.blockAccessed();
    }
    
    /**

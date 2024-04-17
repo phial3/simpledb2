@@ -1,43 +1,47 @@
 package simpledb.metadata;
 
-import simpledb.record.*;
+import simpledb.record.Layout;
+import simpledb.record.Schema;
+import simpledb.record.TableScan;
 import simpledb.tx.Transaction;
 
-class ViewMgr {
-   // the max chars in a view definition.
-   private static final int MAX_VIEWDEF = 100;
+public class ViewMgr {
+    // the max chars in a view definition.
+    private static final int MAX_VIEWDEF = 100;
 
-   TableMgr tblMgr;
+    TableMgr tblMgr;
 
-   public ViewMgr(boolean isNew, TableMgr tblMgr, Transaction tx) {
-      this.tblMgr = tblMgr;
-      if (isNew) {
-         Schema sch = new Schema();
-         sch.addStringField("viewname", TableMgr.MAX_NAME);
-         sch.addStringField("viewdef", MAX_VIEWDEF);
-         tblMgr.createTable("viewcat", sch, tx);
-      }
-   }
+    public ViewMgr(boolean isNew, TableMgr tblMgr, Transaction tx) {
+        this.tblMgr = tblMgr;
+        if (isNew) {
+            Schema sch = new Schema();
+            sch.addStringField("viewName", TableMgr.MAX_NAME);
+            sch.addStringField("viewDef", MAX_VIEWDEF);
+            tblMgr.createTable("viewCatalog", sch, tx);
+        }
+    }
 
-   public void createView(String vname, String vdef, Transaction tx) {
-      Layout layout = tblMgr.getLayout("viewcat", tx);
-      TableScan ts = new TableScan(tx, "viewcat", layout);
-      ts.insert();
-      ts.setString("viewname", vname);
-      ts.setString("viewdef", vdef);
-      ts.close();
-   }
+    public void createView(String viewName, String viewDef, Transaction tx) {
+        Layout layout = tblMgr.getLayout("viewCatalog", tx);
+        TableScan ts = new TableScan(tx, "viewCatalog", layout);
+        ts.insert();
+        ts.setString("viewName", viewName);
+        ts.setString("viewDef", viewDef);
+        ts.close();
+    }
 
-   public String getViewDef(String vname, Transaction tx) {
-      String result = null;
-      Layout layout = tblMgr.getLayout("viewcat", tx);
-      TableScan ts = new TableScan(tx, "viewcat", layout);
-      while (ts.next())
-         if (ts.getString("viewname").equals(vname)) {
-            result = ts.getString("viewdef");
-            break;
-         }
-      ts.close();
-      return result;
-   }
+    public String getViewDef(String viewName, Transaction tx) {
+        String result = null;
+        Layout layout = tblMgr.getLayout("viewCatalog", tx);
+        TableScan ts = new TableScan(tx, "viewCatalog", layout);
+        while (ts.next()) {
+            if (ts.getString("viewName").equals(viewName)) {
+                result = ts.getString("viewDef");
+                break;
+            }
+        }
+        ts.close();
+
+        return result;
+    }
 }

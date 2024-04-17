@@ -5,7 +5,7 @@ import java.rmi.registry.*;
 import simpledb.jdbc.network.*;
 
 public class StartServer {
-   public static void main(String args[]) throws Exception {
+   public static void main(String[] args) throws Exception {
       // configure and initialize the database
       String dirname = (args.length == 0) ? "studentdb" : args[0];
       SimpleDB db = new SimpleDB(dirname);

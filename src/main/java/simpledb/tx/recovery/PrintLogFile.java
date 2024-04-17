@@ -14,7 +14,7 @@ public class PrintLogFile {
 
       int lastblock = fm.length(filename) - 1;
       BlockId blk = new BlockId(filename, lastblock);
-      Page p = new Page(fm.blockSize());
+      Page p = new Page(fm.blocksize());
       fm.read(blk, p);
       Iterator<byte[]> iter = lm.iterator();
       while (iter.hasNext()) {

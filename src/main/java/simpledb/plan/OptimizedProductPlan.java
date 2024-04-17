@@ -14,8 +14,8 @@ public class OptimizedProductPlan implements Plan {
    public OptimizedProductPlan(Plan p1, Plan p2) {
    		Plan prod1 = new ProductPlan(p1, p2);
    		Plan prod2 = new ProductPlan(p2, p1);
-   		int b1 = prod1.blocksAccessed();
-   		int b2 = prod2.blocksAccessed();
+   		int b1 = prod1.blockAccessed();
+   		int b2 = prod2.blockAccessed();
    		bestplan = (b1 < b2) ? prod1 : prod2;   		
    }
 
@@ -23,8 +23,8 @@ public class OptimizedProductPlan implements Plan {
       return bestplan.open();
    }
    
-   public int blocksAccessed() {
-      return bestplan.blocksAccessed();
+   public int blockAccessed() {
+      return bestplan.blockAccessed();
    }
 
    public int recordsOutput() {

@@ -1,114 +1,101 @@
 package simpledb.multibuffer;
 
-import static java.sql.Types.INTEGER;
-import java.util.*;
 import simpledb.file.BlockId;
-import simpledb.query.*;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
+import simpledb.record.Layout;
+import simpledb.record.RecordPage;
 import simpledb.tx.Transaction;
-import simpledb.record.*;
 
-/**
- * The class for the <i>chunk</i> operator.
- * @author Edward Sciore
- */
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.sql.Types.INTEGER;
+
 public class ChunkScan implements Scan {
-   private List<RecordPage> buffs = new ArrayList<>();
-   private Transaction tx;
-   private String filename;
-   private Layout layout;
-   private int startbnum, endbnum, currentbnum;
-   private RecordPage rp;
-   private int currentslot;
+    private List<RecordPage> buffs = new ArrayList<>();
+    private Transaction tx;
+    private String fileName;
+    private Layout layout;
+    private int startBNum, endBNum, currentBNum;
+    private RecordPage rp;
+    private int currentSlot;
 
-   /**
-    * Create a chunk consisting of the specified pages. 
-    * @param layout the metadata for the chunked table
-    * @param startbnum the starting block number
-    * @param endbnum  the ending block number
-    * @param tx the current transaction
-    */ 
-   public ChunkScan(Transaction tx, String filename, Layout layout, int startbnum, int endbnum) {
-      this.tx = tx;
-      this.filename = filename;
-      this.layout = layout;
-      this.startbnum = startbnum;
-      this.endbnum   = endbnum;
-      for (int i=startbnum; i<=endbnum; i++) {
-         BlockId blk = new BlockId(filename, i);
-         buffs.add(new RecordPage(tx, blk, layout));
-      }
-      moveToBlock(startbnum);
-   }
+    /**
+     * Create a chunk consisting of the specified pages.
+     */
+    public ChunkScan(Transaction tx, String fileName, Layout layout, int startBNum, int endBNum) {
+        this.tx = tx;
+        this.fileName = fileName;
+        this.layout = layout;
+        this.startBNum = startBNum;
+        this.endBNum = endBNum;
+        for (int i = startBNum; i<= endBNum; i++) {
+            BlockId blk= new BlockId(fileName, i);
+            buffs.add(new RecordPage(tx, blk, layout));
+        }
+        moveToBlock(startBNum);
+    }
 
-   /**
-    * @see simpledb.query.Scan#close()
-    */
-   public void close() {
-      for (int i=0; i<buffs.size(); i++) {
-         BlockId blk = new BlockId(filename, startbnum+i);
-         tx.unpin(blk);
-      }
-   }
+    @Override
+    public void close() {
+        for (int i = 0; i < buffs.size(); i++) {
+            BlockId blk = new BlockId(fileName, startBNum+i);
+            tx.unpin(blk);
+        }
+    }
 
-   /**
-    * @see simpledb.query.Scan#beforeFirst()
-    */
-   public void beforeFirst() {
-      moveToBlock(startbnum);
-   }
+    @Override
+    public void beforeFirst() {
+        moveToBlock(startBNum);
+    }
 
-   /**
-    * Moves to the next record in the current block of the chunk.
-    * If there are no more records, then make
-    * the next block be current.
-    * If there are no more blocks in the chunk, return false.
-    * @see simpledb.query.Scan#next()  
-    */
-   public boolean next() {
-      currentslot = rp.nextAfter(currentslot);
-      while (currentslot < 0) {
-         if (currentbnum == endbnum)
-            return false;
-         moveToBlock(rp.block().number()+1);
-         currentslot = rp.nextAfter(currentslot);
-      }
-      return true;
-   }
+    /**
+     * Moves to the next record in the current block of the chunk.
+     * If there are no more records, then make
+     * the next block be current.
+     * If there are no more blocks in the chunk, return false.
+     */
+    @Override
+    public boolean next() {
+        currentSlot = rp.nextAfter(currentSlot);
+        while (currentSlot < 0) {
+            if (currentBNum == endBNum) {
+                return false;
+            }
+            moveToBlock(rp.block().number()+1);
+            currentSlot = rp.nextAfter(currentSlot);
+        }
+        return true;
+    }
 
-   /**
-    * @see simpledb.query.Scan#getInt(java.lang.String)
-    */
-   public int getInt(String fldname) {
-      return rp.getInt(currentslot, fldname);
-   }
+    @Override
+    public int getInt(String fieldName) {
+        return rp.getInt(currentSlot, fieldName);
+    }
 
-   /**
-    * @see simpledb.query.Scan#getString(java.lang.String)
-    */
-   public String getString(String fldname) {
-      return rp.getString(currentslot, fldname);
-   }
+    @Override
+    public String getString(String fieldName) {
+        return rp.getString(currentSlot, fieldName);
+    }
 
-   /**
-    * @see simpledb.query.Scan#getVal(java.lang.String)
-    */
-   public Constant getVal(String fldname) {
-      if (layout.schema().type(fldname) == INTEGER)
-         return new Constant(getInt(fldname));
-      else
-         return new Constant(getString(fldname));
-   }
+    @Override
+    public Constant getVal(String fieldName) {
+        if (layout.schema().type(fieldName) == INTEGER) {
+            return new Constant(getInt(fieldName));
+        } else {
+            return new Constant(getString(fieldName));
+        }
+    }
 
-  /**
-    * @see simpledb.query.Scan#hasField(java.lang.String)
-    */
-   public boolean hasField(String fldname) {
-      return layout.schema().hasField(fldname);
-   }
+    @Override
+    public boolean hasField(String fieldName) {
+        return layout.schema().hasField(fieldName);
+    }
 
-   private void moveToBlock(int blknum) {
-      currentbnum = blknum;
-      rp = buffs.get(currentbnum - startbnum);
-      currentslot = -1;
-   }
+    private void moveToBlock(int blkNum) {
+        currentBNum = blkNum;
+        rp = buffs.get(currentBNum - startBNum);
+        currentSlot = -1;
+    }
 }
