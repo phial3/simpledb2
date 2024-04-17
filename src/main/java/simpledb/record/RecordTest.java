@@ -6,7 +6,7 @@ import simpledb.tx.Transaction;
 
 public class RecordTest {
    public static void main(String[] args) throws Exception {
-      SimpleDB db = new SimpleDB("recordtest", 400, 8);
+      SimpleDB db = new SimpleDB("datadir/recordtest", 400, 8);
       Transaction tx = db.newTx();
 
       Schema sch = new Schema();
