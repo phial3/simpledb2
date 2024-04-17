@@ -6,7 +6,7 @@ import simpledb.record.*;
 
 public class CatalogTest {
    public static void main(String[] args) throws Exception {
-      SimpleDB db = new SimpleDB("tabletest", 400, 8);
+      SimpleDB db = new SimpleDB("datadir/tabletest", 400, 8);
       Transaction tx = db.newTx();
       TableMgr tm = new TableMgr(false, tx);
       Layout tcatLayout = tm.getLayout("tblcat", tx);

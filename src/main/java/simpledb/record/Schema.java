@@ -52,4 +52,17 @@ public class Schema {
     public boolean hasField(String fldname) {
         return fields.contains(fldname);
     }
+
+    /**
+     * field information for a single field
+     */
+    public static class FieldInfo {
+        public int type;
+        public int length;
+
+        public FieldInfo(int type, int length) {
+            this.type = type;
+            this.length = length;
+        }
+    }
 }

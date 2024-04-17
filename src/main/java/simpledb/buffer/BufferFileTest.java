@@ -7,7 +7,7 @@ import simpledb.server.SimpleDB;
 
 public class BufferFileTest {
    public static void main(String[] args) throws IOException {
-      SimpleDB db = new SimpleDB("bufferfiletest", 400, 8);
+      SimpleDB db = new SimpleDB("datadir/bufferfiletest", 400, 8);
       BufferMgr bm = db.bufferMgr();
       BlockId blk = new BlockId("testfile", 2);
       int pos1 = 88;

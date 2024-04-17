@@ -6,7 +6,7 @@ import simpledb.tx.Transaction;
 
 public class PlannerStudentTest {
    public static void main(String[] args) {
-      SimpleDB db = new SimpleDB("studentdb");
+      SimpleDB db = new SimpleDB("datadir/studentdb");
       Planner planner = db.planner();
       Transaction tx  = db.newTx();
 

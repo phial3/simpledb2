@@ -7,7 +7,7 @@ import simpledb.log.*;
 
 public class PrintLogFile {
    public static void main(String[] args) {
-      SimpleDB db = new SimpleDB("studentdb", 400, 8);
+      SimpleDB db = new SimpleDB("datadir/studentdb", 400, 8);
       FileMgr fm = db.fileMgr();
       LogMgr lm = db.logMgr();
       String filename = "simpledb.log";

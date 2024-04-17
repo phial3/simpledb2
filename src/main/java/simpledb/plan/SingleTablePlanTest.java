@@ -7,7 +7,7 @@ import java.util.*;
 
 public class SingleTablePlanTest {
 	public static void main(String[] args) throws Exception {
-      SimpleDB db = new SimpleDB("studentdb");
+      SimpleDB db = new SimpleDB("datadir/studentdb");
       MetadataMgr mdm = db.mdMgr();
       Transaction tx = db.newTx();
 
