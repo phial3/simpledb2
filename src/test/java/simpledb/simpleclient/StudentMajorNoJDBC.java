@@ -18,7 +18,7 @@ public class StudentMajorNoJDBC {
    public static void main(String[] args) {
       try {
          // analogous to the driver
-         SimpleDB db = new SimpleDB("studentdb");
+         SimpleDB db = new SimpleDB("datadir/studentdb");
 
          // analogous to the connection
          Transaction tx  = db.newTx();
