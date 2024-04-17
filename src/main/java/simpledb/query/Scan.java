@@ -2,10 +2,10 @@ package simpledb.query;
 
 public interface Scan {
     void beforeFirst();
-    public boolean next();
-    public int getInt(String fieldName);
-    public String getString(String fieldName);
-    public boolean hasField(String fieldName);
-    public void close();
+    boolean next();
+    int getInt(String fieldName);
+    String getString(String fieldName);
+    boolean hasField(String fieldName);
+    void close();
     Constant getVal(String fieldName);
 }

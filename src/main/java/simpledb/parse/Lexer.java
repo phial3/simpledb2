@@ -13,9 +13,9 @@ public class Lexer {
     public Lexer(String s) {
         initKeywords();
         tok = new StreamTokenizer(new StringReader(s));
-        tok.ordinaryChar('.'); // disallow "." in identifiers
-        tok.wordChars('_', '_'); // allow "_" in identifiers
-        tok.lowerCaseMode(true); // ids and keywords are converted
+        tok.ordinaryChar('.');              // disallow "." in identifiers
+        tok.wordChars('_', '_');    // allow "_" in identifiers
+        tok.lowerCaseMode(true);         // ids and keywords are converted
         nextToken();
     }
 
