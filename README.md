@@ -144,3 +144,13 @@ https://github.com/MahmoudFawzyKhalil/sciore-db
 
 https://github.com/nakamasato/database-design-and-implementation
 
+## eBook
+
+https://simpledb-java.netlify.app/database-design-and-implementation.pdf
+
+## simpledb in Rust
+[SimpleDB in Rust](https://github.com/cutsea110/simpledb)
+
+## simpledb in Go
+
+[Simpledb in Go](https://github.com/tyabu12/simpledb)

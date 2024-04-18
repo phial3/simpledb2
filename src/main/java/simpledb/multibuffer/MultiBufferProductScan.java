@@ -12,6 +12,7 @@ public class MultiBufferProductScan implements Scan {
     private String fileName;
     private Layout layout;
     private int chunkSize, nextBlkNum, fileSize;
+
     public MultiBufferProductScan(Transaction tx, Scan lhsScan, String tblName, Layout layout) {
         this.tx = tx;
         this.lhsScan = lhsScan;
