@@ -1,7 +1,5 @@
 package simpledb;
 
-import static java.sql.Types.INTEGER;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -74,7 +72,8 @@ public class App {
         // 4.1. LogMgr
         System.out.println("4.1. LogMgr --------------------------");
         String logfile = "simpledb.log";
-        new File(dbDirectory, logfile).delete(); // if we don't delete it, the program will fail when reading the contents
+        // if we don't delete it, the program will fail when reading the contents
+        new File(dbDirectory, logfile).delete();
         LogMgr lm = new LogMgr(fm, logfile);
         printLogRecords(lm, "The initial empty log file:"); // print an empty log file
         System.out.println("done");
@@ -277,13 +276,12 @@ public class App {
         System.out.println("Its fields are:");
         for (String fldname : sch2.fields()) {
             String type;
-            if (sch2.type(fldname) == INTEGER)
+            if (sch2.type(fldname) == java.sql.Types.INTEGER)
                 type = "int";
             else {
                 int strlen = sch2.length(fldname);
                 type = "varchar(" + strlen + ")";
             }
-
             System.out.println(fldname + ": " + type);
         }
         tx.commit();
@@ -424,14 +422,18 @@ public class App {
         Plan p6 = new SelectPlan(p5, pred);
         System.out.println("R(p6): " + p6.recordsOutput());
         System.out.println("B(p6): " + p6.blockAccessed());
-        for (String fldname : p6.schema().fields())
+        for (String fldname : p6.schema().fields()) {
             System.out.println("V(p6, " + fldname + "): " + p6.distinctValues(fldname));
+        }
 
         s = p6.open();
         s.beforeFirst(); // this is necessary for p1 to move to the first position
-        while (s.next())
-            System.out.println(
-                    "A: " + s.getInt("A") + ", B: " + s.getString("B") + ", C: " + s.getInt("C") + ", D: " + s.getString("D"));
+        while (s.next()) {
+            System.out.println("A: " + s.getInt("A") +
+                    ", B: " + s.getString("B") +
+                    ", C: " + s.getInt("C") +
+                    ", D: " + s.getString("D"));
+        }
         s.close();
         tx.commit();
 
@@ -503,8 +505,9 @@ public class App {
         plan = new TablePlan(tx, "T3", metadataMgr); // metadataMgr created above
         plan = new MaterializePlan(tx, plan);
         Scan scan = plan.open();
-        while (scan.next())
+        while (scan.next()) {
             System.out.println("get record from TempTable: " + scan.getVal("fld1"));
+        }
 
         scan.close();
         tx.commit();
@@ -530,7 +533,7 @@ public class App {
         scan = plan.open();
         while (scan.next())
             System.out.println("aggregation result: groupby: " + scan.getVal("fld1") + ", count: "
-                            + scan.getVal(countfn.fieldName()) + ", max: " + scan.getVal(maxfn.fieldName()));
+                    + scan.getVal(countfn.fieldName()) + ", max: " + scan.getVal(maxfn.fieldName()));
         scan.close();
         tx.commit();
 

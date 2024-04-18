@@ -4,27 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2605fc6e-750c-434c-9ceb-1cf5ca382714" name="Changes" comment="update">
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/BooleanEvaluator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/And.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/BooleanExpression.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/False.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/NonTerminal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/Not.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/Or.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/Terminal.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/Test.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/ast/True.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/lexer/Lexerer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/simpledb/test/parser/RecursiveDescentParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/file/FileMgr.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/file/FileMgr.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/parse/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/parse/Lexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/parse/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/parse/Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/parse/ParserTestActions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/parse/ParserTestActions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/parse/PredParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/parse/PredParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/tx/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/tx/Transaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/simpledb/simpleclient/embedded/FindMajors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/simpledb/simpleclient/embedded/FindMajors.java" afterDir="false" />
+    <list default="true" id="2605fc6e-750c-434c-9ceb-1cf5ca382714" name="Changes" comment="add test case 'Recursive Descent Parser'">
+      <change beforePath="$PROJECT_DIR$/src/test/java/simpledb/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/simpledb/App.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,6 +60,8 @@
     "Application.IndexSelectTest.executor": "Run",
     "Application.IndexUpdateTest.executor": "Run",
     "Application.LayoutTest.executor": "Run",
+    "Application.Lexerer.executor": "Run",
+    "Application.MainTest.executor": "Run",
     "Application.MetadataMgrTest.executor": "Run",
     "Application.PlannerTest1.executor": "Run",
     "Application.PlannerTest2.executor": "Run",
@@ -137,13 +120,13 @@
       <recent name="simpledb" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Lexerer">
-    <configuration name="ConcurrencyTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="simpledb.tx.concurrency.ConcurrencyTest" />
+  <component name="RunManager" selected="Application.App">
+    <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="simpledb.App" />
       <module name="simpledb2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="simpledb.tx.concurrency.*" />
+          <option name="PATTERN" value="simpledb.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -151,12 +134,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FindMajors" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="simpledb.simpleclient.embedded.FindMajors" />
+    <configuration name="ConcurrencyTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="simpledb.tx.concurrency.ConcurrencyTest" />
       <module name="simpledb2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="simpledb.simpleclient.embedded.*" />
+          <option name="PATTERN" value="simpledb.tx.concurrency.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -205,11 +188,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.App" />
         <item itemvalue="Application.Lexerer" />
         <item itemvalue="Application.MainTest" />
         <item itemvalue="Application.Test" />
         <item itemvalue="Application.ConcurrencyTest" />
-        <item itemvalue="Application.FindMajors" />
       </list>
     </recent_temporary>
   </component>
@@ -322,7 +305,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713402876303</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="add test case 'Recursive Descent Parser'">
+      <option name="closed" value="true" />
+      <created>1713447372083</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1713447372083</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -346,7 +337,8 @@
     <MESSAGE value="add simpledb 3.4" />
     <MESSAGE value="fix test case" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="add test case 'Recursive Descent Parser'" />
+    <option name="LAST_COMMIT_MESSAGE" value="add test case 'Recursive Descent Parser'" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -365,11 +357,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/simpledb/materialize/SortPlan.java</url>
           <line>47</line>
           <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/simpledb/tx/Transaction.java</url>
-          <line>76</line>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -6,4 +6,6 @@ package simpledb.buffer;
  * @author Edward Sciore
  */
 @SuppressWarnings("serial")
-public class BufferAbortException extends RuntimeException {}
+public class BufferAbortException extends RuntimeException {
+
+}
