@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2605fc6e-750c-434c-9ceb-1cf5ca382714" name="Changes" comment="update">
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/record/FieldInfo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/record/Schema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/record/Schema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/tx/ConcurrencyTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/simpledb/tx/ConcurrencyTest.java" afterDir="false" />
+    <list default="true" id="2605fc6e-750c-434c-9ceb-1cf5ca382714" name="Changes" comment="fix test case">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/simpledb/index/CreateStudentDb.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/simpledb/simpleclient/CreateStudentDbTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,6 +49,7 @@
     "Application.Client.executor": "Run",
     "Application.ConcurrencyTest.executor": "Run",
     "Application.CreateStudentDb.executor": "Run",
+    "Application.CreateStudentDbTest.executor": "Run",
     "Application.EmbeddedStudentMajor.executor": "Run",
     "Application.FileTest.executor": "Run",
     "Application.IndexJoinTest.executor": "Run",
@@ -60,6 +60,7 @@
     "Application.MetadataMgrTest.executor": "Run",
     "Application.PlannerTest1.executor": "Run",
     "Application.PlannerTest2.executor": "Run",
+    "Application.PrintLogFile.executor": "Run",
     "Application.ProductTest.executor": "Run",
     "Application.RandomAccessFileTest.executor": "Run",
     "Application.RecordTest.executor": "Run",
@@ -111,7 +112,7 @@
       <recent name="simpledb" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.PrintLogFile">
+  <component name="RunManager" selected="Application.CreateStudentDbTest">
     <configuration name="ConcurrencyTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="simpledb.tx.concurrency.ConcurrencyTest" />
       <module name="simpledb2" />
@@ -125,12 +126,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="PlannerTest2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="simpledb.plan.PlannerTest2" />
+    <configuration name="CreateStudentDbTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="simpledb.simpleclient.CreateStudentDbTest" />
       <module name="simpledb2" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="simpledb.plan.*" />
+          <option name="PATTERN" value="simpledb.simpleclient.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -179,11 +180,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.CreateStudentDbTest" />
         <item itemvalue="Application.PrintLogFile" />
         <item itemvalue="Application.simpledb.tx.ConcurrencyTest" />
         <item itemvalue="Application.ConcurrencyTest" />
         <item itemvalue="Application.ScanTest2" />
-        <item itemvalue="Application.PlannerTest2" />
       </list>
     </recent_temporary>
   </component>
@@ -205,7 +206,8 @@
       <updated>1713317244168</updated>
       <workItem from="1713317245064" duration="7098000" />
       <workItem from="1713330921879" duration="8161000" />
-      <workItem from="1713339934456" duration="12279000" />
+      <workItem from="1713339934456" duration="13033000" />
+      <workItem from="1713401851043" duration="692000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -279,7 +281,15 @@
       <option name="project" value="LOCAL" />
       <updated>1713363156442</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="fix test case">
+      <option name="closed" value="true" />
+      <created>1713363780397</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1713363780397</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -301,20 +311,16 @@
     <MESSAGE value="init" />
     <MESSAGE value="add simpledb 3.4" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="fix test case" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix test case" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/simpledb/jdbc/network/NetworkDriver.java</url>
-          <line>19</line>
+          <line>25</line>
           <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/simpledb/jdbc/embedded/EmbeddedDriver.java</url>
-          <line>9</line>
-          <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/simpledb/materialize/SortPlan.java</url>

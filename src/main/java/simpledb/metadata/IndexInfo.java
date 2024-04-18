@@ -10,7 +10,8 @@ import simpledb.tx.Transaction;
 import static java.sql.Types.INTEGER;
 
 public class IndexInfo {
-    private String idxName, fieldName;
+    private String idxName;
+    private String fieldName;
     private Transaction tx;
     private Schema tblSchema;
     private Layout idxLayout;
@@ -19,14 +20,14 @@ public class IndexInfo {
     public IndexInfo(String idxName, String fieldName, Schema tblSchema, Transaction tx, StatInfo si) {
         this.idxName = idxName;
         this.fieldName = fieldName;
-        this.tx = tx;
         this.tblSchema = tblSchema;
-        this.idxLayout = createIdxLayout();
+        this.tx = tx;
         this.si = si;
+        this.idxLayout = createIdxLayout();
     }
 
     public Index open() {
-//        return new HashIndex(tx, idxName, idxLayout);
+        // return new HashIndex(tx, idxName, idxLayout);
         return new BTreeIndex(tx, idxName, idxLayout);
     }
 
@@ -48,9 +49,9 @@ public class IndexInfo {
         Schema sch = new Schema();
         sch.addIntField("block");
         sch.addIntField("id");
-        if (tblSchema.type(fieldName) == INTEGER)
+        if (tblSchema.type(fieldName) == INTEGER) {
             sch.addIntField("dataVal");
-        else {
+        } else {
             int fieldLen = tblSchema.length(fieldName);
             sch.addStringField("dataVal", fieldLen);
         }

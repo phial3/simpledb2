@@ -1,5 +1,6 @@
-package simpledb.index;
+package simpledb.simpleclient;
 
+import simpledb.index.Index;
 import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.plan.Plan;
@@ -14,7 +15,7 @@ import simpledb.tx.Transaction;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CreateStudentDb {
+public class CreateStudentDbTest {
     public static void main(String[] args) {
         SimpleDB db = new SimpleDB("datadir/studentDb");
         Transaction tx = db.newTx();
@@ -25,7 +26,8 @@ public class CreateStudentDb {
         System.out.println("Table STUDENT created.");
 
         s = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
-        String[] students = {"(1, 'joe', 10, 2021)",
+        String[] students = {
+                "(1, 'joe', 10, 2021)",
                 "(2, 'amy', 20, 2020)",
                 "(3, 'max', 10, 2022)",
                 "(4, 'sue', 20, 2022)",
@@ -33,7 +35,8 @@ public class CreateStudentDb {
                 "(6, 'kim', 20, 2020)",
                 "(7, 'art', 30, 2021)",
                 "(8, 'pat', 20, 2019)",
-                "(9, 'lee', 10, 2021)"};
+                "(9, 'lee', 10, 2021)"
+        };
         for (String val : students) {
             planner.executeUpdate(s + val, tx);
         }
@@ -44,12 +47,14 @@ public class CreateStudentDb {
         System.out.println("Table ENROLL created.");
 
         s = "insert into ENROLL(EId, SId, SectionId, Grade) values ";
-        String[] enrolls = {"(14, 1, 13, 'A')",
+        String[] enrolls = {
+                "(14, 1, 13, 'A')",
                 "(24, 1, 43, 'C' )",
                 "(34, 2, 43, 'B+')",
                 "(44, 4, 33, 'B' )",
                 "(54, 4, 53, 'A' )",
-                "(64, 6, 53, 'A' )"};
+                "(64, 6, 53, 'A' )"
+        };
         for (String val : enrolls) {
             planner.executeUpdate(s + val, tx);
         }
@@ -66,10 +71,16 @@ public class CreateStudentDb {
         insertEnrollIndex(tx, mdm);
 
         tx.commit();
+
+        System.out.println("get index info for STUDENT table:");
+        Map<String, IndexInfo> indexInfo = mdm.getIndexInfo("student", tx);
+        indexInfo.forEach((k, v) -> {
+            System.out.println(k + ":" + String.format("%s", v));
+        });
     }
 
     private static void insertStudentIndex(Transaction tx, MetadataMgr mdm) {
-        Map<String,Index> indexes = new HashMap<>();
+        Map<String, Index> indexes = new HashMap<>();
         Map<String, IndexInfo> idxInfo = mdm.getIndexInfo("student", tx);
 
         for (String fieldName : idxInfo.keySet()) {
@@ -91,8 +102,9 @@ public class CreateStudentDb {
         }
         System.out.println("Student Index inserted.");
     }
+
     private static void insertEnrollIndex(Transaction tx, MetadataMgr mdm) {
-        Map<String,Index> indexes = new HashMap<>();
+        Map<String, Index> indexes = new HashMap<>();
         Map<String, IndexInfo> idxInfo = mdm.getIndexInfo("enroll", tx);
 
         for (String fieldName : idxInfo.keySet()) {
