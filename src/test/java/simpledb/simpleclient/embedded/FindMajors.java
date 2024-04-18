@@ -12,7 +12,7 @@ public class FindMajors {
       System.out.println("Here are the " + major + " majors");
       System.out.println("Name\tGradYear");
 
-      String url = "jdbc:simpledb:studentdb";
+      String url = "jdbc:simpledb:datadir/studentdb";
       String qry = "select sname, gradyear "
             + "from student, dept "
             + "where did = majorid "

@@ -71,8 +71,9 @@ public class Transaction {
         concurMgr.xLock(blk);
         Buffer buff = mybuffers.getBuffer(blk);
         int lsn = -1;
-        if (okToLog)
+        if (okToLog) {
             lsn = recoveryMgr.setInt(buff, offset, val);
+        }
         Page p = buff.contents();
         p.setInt(offset, val);
         buff.setModified(txnum, lsn);

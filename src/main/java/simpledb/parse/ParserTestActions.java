@@ -10,10 +10,11 @@ public class ParserTestActions {
          Parser p = new Parser(s);
          try {
             String result;
-            if (s.startsWith("select")) 
-               result = p.query().toString();
-            else
-               result = p.updateCmd().getClass().toString();
+            if (s.startsWith("select")) {
+                result = p.query().toString();
+            } else {
+                result = p.updateCmd().getClass().toString();
+            }
             System.out.println("Your statement is: " + result);
          }
          catch (BadSyntaxException ex) {

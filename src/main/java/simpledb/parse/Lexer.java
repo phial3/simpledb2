@@ -13,14 +13,14 @@ public class Lexer {
     public Lexer(String s) {
         initKeywords();
         tok = new StreamTokenizer(new StringReader(s));
-        tok.ordinaryChar('.'); // disallow "." in identifiers
-        tok.wordChars('_', '_'); // allow "_" in identifiers
-        tok.lowerCaseMode(true); // ids and keywords are converted
+        tok.ordinaryChar('.');              // disallow "." in identifiers
+        tok.wordChars('_', '_');    // allow "_" in identifiers
+        tok.lowerCaseMode(true);         // ids and keywords are converted
         nextToken();
     }
 
     public boolean matchDelim(char d) {
-        return d == (char)tok.ttype;
+        return d == (char) tok.ttype;
     }
 
     public boolean matchIntConstant() {
@@ -45,36 +45,41 @@ public class Lexer {
      * Otherwise, moves to the next token.
      */
     public void eatDelim(char d) {
-        if (!matchDelim(d))
+        if (!matchDelim(d)) {
             throw new BadSyntaxException();
+        }
         nextToken();
     }
 
     public int eatIntConstant() {
-        if (!matchIntConstant())
+        if (!matchIntConstant()) {
             throw new BadSyntaxException();
+        }
         int i = (int) tok.nval;
         nextToken();
         return i;
     }
 
     public String eatStringConstant() {
-        if (!matchStringConstant())
+        if (!matchStringConstant()) {
             throw new BadSyntaxException();
+        }
         String s = tok.sval;
         nextToken();
         return s;
     }
 
     public void eatKeyword(String w) {
-        if (!matchKeyword(w))
+        if (!matchKeyword(w)) {
             throw new BadSyntaxException();
+        }
         nextToken();
     }
 
     public String eatId() {
-        if (!matchId())
+        if (!matchId()) {
             throw new BadSyntaxException();
+        }
         String s = tok.sval;
         nextToken();
         return s;

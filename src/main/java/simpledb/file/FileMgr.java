@@ -17,13 +17,17 @@ public class FileMgr {
         this.blocksize = blocksize;
         isNew = !dbDirectory.exists();
 
-        if (isNew)
+        if (isNew) {
             dbDirectory.mkdirs();
+        }
 
         // remove any leftover temporary tables
-        for (String filename : dbDirectory.list()) {
-            if (filename.startsWith("temp")) {
-                new File(dbDirectory, filename).delete();
+        String[] dirList = dbDirectory.list();
+        if (dirList != null) {
+            for (String filename : dirList) {
+                if (filename.startsWith("temp")) {
+                    new File(dbDirectory, filename).delete();
+                }
             }
         }
     }

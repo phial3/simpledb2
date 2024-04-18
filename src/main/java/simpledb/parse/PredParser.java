@@ -12,17 +12,19 @@ public class PredParser {
     }
 
     public void constant() {
-        if (lex.matchStringConstant())
+        if (lex.matchStringConstant()) {
             lex.eatStringConstant();
-        else
+        } else {
             lex.eatIntConstant();
+        }
     }
 
     public void expression() {
-        if (lex.matchId())
+        if (lex.matchId()) {
             field();
-        else
+        } else {
             constant();
+        }
     }
 
     public void term() {

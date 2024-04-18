@@ -22,10 +22,11 @@ public class Parser {
     }
 
     public Constant constant() {
-        if (lex.matchStringConstant())
+        if (lex.matchStringConstant()) {
             return new Constant(lex.eatStringConstant());
-        else
+        } else {
             return new Constant(lex.eatIntConstant());
+        }
     }
 
     public Expression expression() {
@@ -85,24 +86,26 @@ public class Parser {
     }
 
     public Object updateCmd() {
-        if (lex.matchKeyword("insert"))
+        if (lex.matchKeyword("insert")) {
             return insert();
-        else if (lex.matchKeyword("delete"))
+        } else if (lex.matchKeyword("delete")) {
             return delete();
-        else if (lex.matchKeyword("update"))
+        } else if (lex.matchKeyword("update")) {
             return modify();
-        else
+        } else {
             return create();
+        }
     }
 
     private Object create() {
         lex.eatKeyword("create");
-        if (lex.matchKeyword("table"))
+        if (lex.matchKeyword("table")) {
             return createTable();
-        else if (lex.matchKeyword("view"))
+        } else if (lex.matchKeyword("view")) {
             return createView();
-        else
+        } else {
             return createIndex();
+        }
     }
 
     private CreateIndexData createIndex() {
